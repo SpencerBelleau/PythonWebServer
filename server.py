@@ -1,39 +1,12 @@
 from socket import socket, AF_INET, SOCK_STREAM
 import os, subprocess
+from funcs.servFunctions import *
 listen = socket(AF_INET, SOCK_STREAM)
 listen.bind(('', 80))
 listen.listen(5)
 root = os.path.abspath(os.path.dirname(__file__))
-def wrapString(string):
-	return "\"" + string + "\""
-def parseRequest(request):
-	#First, split the request into its logical parts
-	lines = request.split('\r\n')
-	#next, split the first piece into COMMAND, PATH, VER
-	cpv = lines[0].split(' ')
-	#print(cpv)
-	#If it's a GET
-	if(cpv[0] == "GET"):
-		#Split off the GET data, if there is any.
-		try:
-			path, getData = cpv[1].split("?")
-			#replace all the ampersands
-			getData = getData.replace("&", " ")
-		except:
-			path = cpv[1]
-			getData = ""
-	else:
-		#POST is not supported
-		#Data is parsed and treated as GET
-		try:
-			path = cpv[1]
-			getData = lines[11]
-			getData = getData.replace("&", " ")
-		except:
-			path = cpv[1]
-			getData = ""
-	return (cpv[0], path, getData)
 #print(root)
+print("Server Listening on port 80")
 while True:
 	con, addr = listen.accept()
 	try:
@@ -43,9 +16,34 @@ while True:
 		#print(req)
 		#print(getData)
 		print("New " + type + " request from " + str(addr) + " for " + str(req))
-		if(req == "/"):
-			res = open('html/index.html', 'rb')
-			con.send(res.read())
+		if(req[-1] == "/"):
+			try:
+				#print("Trying HTML")
+				res = open(root + req + 'index.html', 'rb')
+				con.send(res.read())
+			except:
+				try:
+					#print("Trying PHP")
+					#req = "/php/index.php"
+					open(root + req + "index.php", 'rb')
+					res = subprocess.getoutput("php-cgi -f " + wrapString(root + req + "index.php") + " " + getData)
+					#res = open('php/index.php', 'rb')
+					con.send(res.encode())
+				except:
+					try:
+						#print("Trying Python")
+						#req = "/python/index.py"
+						open(root + req + "index.py", 'rb')
+						res = subprocess.getoutput("py " + wrapString(root + req + "index.py") + " " + getData)
+						#res = open('python/index.py')
+						con.send(res.encode())
+					except:
+						res = ""
+						res += "<html><h2>Default Index</h2><ul>"
+						for name in (os.listdir(root + req)):
+							res += "<li><a href='" + indexLink(name) + "'>" + indexLink(name) + "</a></li>"
+						res += "</ul></html>"
+						con.send(res.encode())
 		else:
 			if(req[-4:] == ".php"):
 				try:
