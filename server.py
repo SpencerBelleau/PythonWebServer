@@ -6,22 +6,47 @@ listen.listen(5)
 root = os.path.abspath(os.path.dirname(__file__))
 def wrapString(string):
 	return "\"" + string + "\""
-
+def parseRequest(request):
+	#First, split the request into its logical parts
+	lines = request.split('\r\n')
+	#next, split the first piece into COMMAND, PATH, VER
+	cpv = lines[0].split(' ')
+	#If it's a GET
+	if(cpv[0] == "GET"):
+		#Split off the GET data, if there is any.
+		postData = ""
+		try:
+			path, getData = cpv[1].split("?")
+			#replace all the ampersands
+			getData = getData.replace("&", " ")
+		except:
+			path = cpv[1]
+			getData = ""
+	else:
+		#POST is not supported
+		path = cpv[1]
+		getData = ""
+		postData = ""
+	return (cpv[0], path, getData, postData)
 print(root)
 while True:
 	con, addr = listen.accept()
 	try:
 		rawRequest = con.recv(2048).decode()
-		list = rawRequest.split(" ")
-		req = list[1]
-		print("New request from " + str(addr) + " for " + str(req))
+		print("--------------")
+		print(rawRequest)
+		type, req, getData, postData = parseRequest(rawRequest)
+		#print(req)
+		#print(getData)
+		print("New " + type + " request from " + str(addr) + " for " + str(req))
+		print("--------------")
 		if(req == "/"):
 			res = open('html/index.html', 'rb')
 			con.send(res.read())
 		else:
 			if(req[-4:] == ".php"):
 				try:
-					res = subprocess.getoutput("php " + wrapString(root + req))
+					res = subprocess.getoutput("php-cgi -f " + wrapString(root + req) + " " + getData)
 				except Exception as e:
 					print(e)
 					res = "N/A".encode()
