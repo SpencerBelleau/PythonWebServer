@@ -1,5 +1,5 @@
 from socket import socket, AF_INET, SOCK_STREAM
-import os, subprocess, sys, urllib.parse, threading
+import os, subprocess, sys, urllib.request, urllib.parse, threading, json
 from funcs.servFunctions import *
 listen = socket(AF_INET, SOCK_STREAM)
 listen.bind(('', 80))
@@ -79,7 +79,11 @@ def thread(con, addr):
 		res = "An error has occurred: " + str(e)
 		con.send(res.encode())
 	con.close()
-print("Server Listening on port 80")
-while True:
-	con, addr = listen.accept()
-	threading.Thread(target=thread, args=(con, addr)).start()
+try:
+	myIP = json.loads(urllib.request.urlopen("http://ip.jsontest.com/").read().decode())["ip"]
+	print("Server hosted @ " + myIP + ":80")
+	while True:
+		con, addr = listen.accept()
+		threading.Thread(target=thread, args=(con, addr)).start()
+except:
+	print("No internet connection.")
