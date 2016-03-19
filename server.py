@@ -13,7 +13,9 @@ def thread(con, addr):
 		type, req, getData = parseRequest(rawRequest)
 		#print(req)
 		#print(getData)
-		print("New " + type + " request from " + str(addr) + " for " + str(req))
+		print(str(addr) + ": " + type + " " + str(req))
+		header = "HTTP/1.1 200 OK\r\n\r\n"
+		con.send(header.encode())
 		req = urllib.parse.unquote_plus(req)
 		if(req[-1] == "/"):
 			try:
@@ -74,9 +76,8 @@ def thread(con, addr):
 					con.send("<h1 style='text-align:center'>404 lol</h1>".encode())
 					con.send("<a style='text-align:center' href='/'>Back to Index</a>".encode())
 	except Exception as e:
-		msg = "An error has occurred: " + str(e)
-		con.send(msg.encode())
-	#con.send('HTTP/1.1 200 OK\r\n\r\n<h1>Hi</h1>'.encode())
+		res = "An error has occurred: " + str(e)
+		con.send(res.encode())
 	con.close()
 print("Server Listening on port 80")
 while True:
