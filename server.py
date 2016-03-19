@@ -1,14 +1,12 @@
 from socket import socket, AF_INET, SOCK_STREAM
-import os, subprocess, sys, urllib.parse
+import os, subprocess, sys, urllib.parse, threading
 from funcs.servFunctions import *
 listen = socket(AF_INET, SOCK_STREAM)
 listen.bind(('', 80))
 listen.listen(5)
 root = os.path.abspath(os.path.dirname(__file__))
 #print(root)
-print("Server Listening on port 80")
-while True:
-	con, addr = listen.accept()
+def thread(con, addr):
 	try:
 		rawRequest = con.recv(2048).decode()
 		#print(rawRequest)
@@ -80,4 +78,7 @@ while True:
 		con.send(msg.encode())
 	#con.send('HTTP/1.1 200 OK\r\n\r\n<h1>Hi</h1>'.encode())
 	con.close()
-	print("--------------")
+print("Server Listening on port 80")
+while True:
+	con, addr = listen.accept()
+	threading.Thread(target=thread, args=(con, addr)).start()
