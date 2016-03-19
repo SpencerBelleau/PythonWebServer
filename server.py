@@ -1,5 +1,5 @@
 from socket import socket, AF_INET, SOCK_STREAM
-import os, subprocess
+import os, subprocess, sys, urllib.parse
 from funcs.servFunctions import *
 listen = socket(AF_INET, SOCK_STREAM)
 listen.bind(('', 80))
@@ -16,32 +16,39 @@ while True:
 		#print(req)
 		#print(getData)
 		print("New " + type + " request from " + str(addr) + " for " + str(req))
+		req = urllib.parse.unquote_plus(req)
 		if(req[-1] == "/"):
 			try:
 				#print("Trying HTML")
 				res = open(root + req + 'index.html', 'rb')
 				con.send(res.read())
+				res.close()
 			except:
 				try:
 					#print("Trying PHP")
 					#req = "/php/index.php"
-					open(root + req + "index.php", 'rb')
+					t = open(root + req + "index.php", 'rb')
 					res = subprocess.getoutput("php-cgi -f " + wrapString(root + req + "index.php") + " " + getData)
 					#res = open('php/index.php', 'rb')
 					con.send(res.encode())
+					t.close()
 				except:
 					try:
 						#print("Trying Python")
 						#req = "/python/index.py"
-						open(root + req + "index.py", 'rb')
+						t = open(root + req + "index.py", 'rb')
 						res = subprocess.getoutput("py " + wrapString(root + req + "index.py") + " " + getData)
 						#res = open('python/index.py')
 						con.send(res.encode())
+						t.close()
 					except:
 						res = ""
-						res += "<html><h2>Default Index</h2><ul>"
+						res += "<!DOCTYPE html><html><h2>Index of " + req + "</h2><ul><li><a href='..'>..</a></li>"
 						for name in (os.listdir(root + req)):
-							res += "<li><a href='" + indexLink(name) + "'>" + indexLink(name) + "</a></li>"
+							if(name == sys.argv[0].split('\\')[-1]):
+								continue
+							else:
+								res += "<li><a href='" + indexLink(name, (root + req)) + "'>" + indexLink(name, (root + req)) + "</a></li>"
 						res += "</ul></html>"
 						con.send(res.encode())
 		else:
@@ -63,13 +70,14 @@ while True:
 				try:
 					res = open(root + req, 'rb')
 					con.send(res.read())
+					res.close()
 				except:
 					print("Bad request: " + str(req))
 					con.send("<h1 style='text-align:center'>404 lol</h1>".encode())
 					con.send("<a style='text-align:center' href='/'>Back to Index</a>".encode())
-		print("--------------")
 	except Exception as e:
 		msg = "An error has occurred: " + str(e)
 		con.send(msg.encode())
 	#con.send('HTTP/1.1 200 OK\r\n\r\n<h1>Hi</h1>'.encode())
 	con.close()
+	print("--------------")

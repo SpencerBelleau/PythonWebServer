@@ -1,3 +1,4 @@
+import os, urllib.parse
 def wrapString(string):
 	return "\"" + string + "\""
 def parseRequest(request):
@@ -27,8 +28,9 @@ def parseRequest(request):
 			path = cpv[1]
 			getData = ""
 	return (cpv[0], path, getData)
-def indexLink(str):
-	if("." in str[1:]):
+def indexLink(str, path):
+	loc = urllib.parse.unquote_plus(path + str)
+	if(os.path.isfile(loc)):
 		return str
 	else:
 		return (str + "/")
