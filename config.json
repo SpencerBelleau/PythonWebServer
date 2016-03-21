@@ -1,6 +1,7 @@
 {
 	"executable": "server.py",
 	"persistent": true,
+	"timeout": "15"
 	"redirectRoot": 
 		{
 			"on": false,

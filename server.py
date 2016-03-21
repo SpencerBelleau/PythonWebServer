@@ -11,12 +11,14 @@ listen.bind(('', 80))
 listen.listen(5)
 root = os.path.abspath(os.path.dirname(__file__))
 def thread(con, addr):
-	con.settimeout(10)
+	if(config["persistent"]):
+		con.settimeout(int(config["timeout"]))
 	persistent = True
 	while persistent:
 		#First, try to get data
 		try:
-			rawRequest = con.recv(2048).decode()
+			byteRequest = con.recv(2048)
+			rawRequest = byteRequest.decode()
 		except:
 			print("Closing port " + str(addr[1]))
 			break
