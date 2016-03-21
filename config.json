@@ -1,0 +1,10 @@
+{
+	"executable": "server.py",
+	"persistent": true,
+	"redirectRoot": 
+		{
+			"on": false,
+			"location": "html/index.html"
+		},
+	"version": "1.0.0"
+}
