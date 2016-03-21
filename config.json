@@ -1,7 +1,8 @@
 {
 	"executable": "server.py",
+	"buffersize": 4096,
 	"persistent": true,
-	"timeout": "15"
+	"timeout": 15,
 	"redirectRoot": 
 		{
 			"on": false,

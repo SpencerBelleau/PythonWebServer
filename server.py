@@ -12,12 +12,12 @@ listen.listen(5)
 root = os.path.abspath(os.path.dirname(__file__))
 def thread(con, addr):
 	if(config["persistent"]):
-		con.settimeout(int(config["timeout"]))
+		con.settimeout(config["timeout"])
 	persistent = True
 	while persistent:
 		#First, try to get data
 		try:
-			byteRequest = con.recv(2048)
+			byteRequest = con.recv(config["buffersize"])
 			rawRequest = byteRequest.decode()
 		except:
 			print("Closing port " + str(addr[1]))
