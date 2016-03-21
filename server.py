@@ -42,13 +42,13 @@ def thread(con, addr):
 							resp = subprocess.getoutput("py " + wrapString(root + req + "index.py") + " " + getData).encode()
 						except:
 							resp = ""
-							resp += "<!DOCTYPE html><html><h2>Index of " + req + "</h2><ul><li><a href='..'>..</a></li>"
+							resp += "<!DOCTYPE html><html><head><title>Index of " + req + "</title></head><body><h2>Index of " + req + "</h2><ul><li><a href='..'>..</a></li>"
 							for name in (os.listdir(root + req)):
 								if(name == sys.argv[0].split('\\')[-1]):
 									continue
 								else:
 									resp += "<li><a href='" + indexLink(urllib.parse.quote_plus(name), (root + req)) + "'>" + indexLink(name, (root + req)) + "</a></li>"
-							resp += "</ul></html>"
+							resp += "</ul></body></html>"
 							resp = resp.encode()
 			else:
 				if(req[-4:] == ".php"):
@@ -78,8 +78,12 @@ def thread(con, addr):
 		length = len(resp)
 		header += "content-length: " + str(length) + "\r\n"
 		header += "\r\n"
-		con.send(header.encode())
-		con.send(resp)
+		try:
+			con.send(header.encode())
+			con.send(resp)
+		except:
+			print("Send error: socket " + str(addr[1]) + " closed by client")
+			break
 	con.close()
 try:
 	myIP = json.loads(urllib.request.urlopen("https://api.ipify.org/?format=json").read().decode())["ip"]
