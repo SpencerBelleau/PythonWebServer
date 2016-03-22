@@ -81,7 +81,8 @@ def thread(con, addr):
 							resp = "could not run PHP script".encode()
 					elif(req[-3:] == ".py"):
 						try:
-							resp = subprocess.getoutput("py " + wrapString(root + req) + " " + getData).encode()
+							#resp = subprocess.getoutput("py " + wrapString(root + req) + " " + getData).encode()
+							resp = subprocess.Popen([sys.executable, root + req, getData], stdout=subprocess.PIPE, cwd=(os.path.split(root+req)[0])).communicate()[0] #UGLY, but it works
 						except Exception as e:
 							print(e)
 							resp = "could not run Python script".encode()

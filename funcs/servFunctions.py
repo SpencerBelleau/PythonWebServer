@@ -10,9 +10,12 @@ def parseRequest(request):
 	cpv = lines[0]
 	#also, check if we need to keep-alive
 	#print(getParsedArgs(lines, "Connection:"))
-	if(getParsedArgs(lines, "Connection:")[1] == "keep-alive"):
-		persistent = True
-	else:
+	try:
+		if(getParsedArgs(lines, "Connection:")[1] == "keep-alive"):
+			persistent = True
+		else:
+			persistent = False
+	except:
 		persistent = False
 	#print(cpv)
 	#If it's a GET
