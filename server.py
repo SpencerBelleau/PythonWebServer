@@ -19,13 +19,19 @@ def thread(con, addr):
 		try:
 			byteRequest = con.recv(config["buffersize"])
 			rawRequest = byteRequest.decode()
+			if(rawRequest == ""):
+				print("Empty Request")
+				con.close()
+				continue
 		except:
 			print("Closing port " + str(addr[1]))
 			break
 		#Then, try to respond
 		try:
 			#Parse useful information out of the HTTP header
+			#print("Parsing request")
 			type, req, getData, persistent = parseRequest(rawRequest)
+			#print("Request parsed")
 			#Print a log
 			print(str(addr) + ": " + type + " " + str(req))
 			#Initialize the header, this may get changed later
@@ -123,8 +129,8 @@ def thread(con, addr):
 				con.send(resp)
 		#If the socket is closed, say so
 		except Exception as e:
-			print(e)
-			print("Send error: socket " + str(addr[1]) + " closed by client")
+			#print(e)
+			print("Socket " + str(addr) + " closed by client")
 			break
 	#Close when we're done
 	con.close()

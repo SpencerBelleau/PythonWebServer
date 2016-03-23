@@ -16,6 +16,8 @@ def parseRequest(request):
 		else:
 			persistent = False
 	except:
+		print("No connection field in request.")
+		print(request)
 		persistent = False
 	#print(cpv)
 	#If it's a GET
