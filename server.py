@@ -47,9 +47,10 @@ def thread(con, addr):
 			req = urllib.parse.unquote_plus(req)
 			getData = urllib.parse.unquote_plus(getData)
 			#If we're redirecting, do it
-			if(req == "/" and config["redirectRoot"]["on"]):
+			#if(req == "/" and config["redirectRoot"]["on"]): No longer needed, much better code now
+			if(isRedirect(config, req)):
 				header = "HTTP/1.1 302 Found\r\n"
-				header += "Location: /" + config["redirectRoot"]["location"] + "\r\n"
+				header += "Location: /" + redirect(config, req) + "\r\n"
 				resp = ""
 			#Else, if no file is specified
 			elif(req[-1] == "/"):

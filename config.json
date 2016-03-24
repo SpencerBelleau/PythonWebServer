@@ -3,10 +3,12 @@
 	"buffersize": 4096,
 	"persistent": true,
 	"timeout": 15,
-	"redirectRoot": 
-		{
-			"on": false,
-			"location": "html/index.html"
-		},
+	"redirects": {
+		"on": true,
+		"urls": {
+			"/": "examples/index.html",
+			"/rarePepes/index.py": "examples/index.html"
+		}
+	},
 	"version": "1.0.0"
 }

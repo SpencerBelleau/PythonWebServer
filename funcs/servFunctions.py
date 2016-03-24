@@ -70,3 +70,15 @@ def indexLink(str, path):
 		return str
 	else:
 		return (str + "/")
+def isRedirect(config, request):
+	urls = config["redirects"]["urls"]
+	if((request in urls) and config["redirects"]["on"]):
+		return True
+	else:
+		return False
+def redirect(config, request):
+	urls = config["redirects"]["urls"]
+	try:
+		return urls[request]
+	except:
+		return request
