@@ -6,8 +6,7 @@
 	"redirects": {
 		"on": true,
 		"urls": {
-			"/": "examples/index.html",
-			"/rarePepes/index.py": "examples/index.html"
+			"/": "html/index.html"
 		}
 	},
 	"version": "1.0.0"
