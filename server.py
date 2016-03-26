@@ -17,20 +17,27 @@ def thread(con, addr):
 	while persistent:
 		#First, try to get data
 		try:
-			byteRequest = con.recv(config["buffersize"])
-			rawRequest = byteRequest.decode()
-			if(rawRequest == ""):
+			#This can now get pretty huge requests
+			byteRequest = recvall(con, config["buffersize"])#con.recv(config["buffersize"])
+			#print("Processed Request")
+			if(byteRequest == b''):
 				print("Empty Request")
 				con.close()
 				continue
-		except:
+			#rawRequest = byteRequest.decode()
+		except Exception as e:
+			#print(e)
 			print("Closing port " + str(addr[1]))
 			break
 		#Then, try to respond
 		try:
 			#Parse useful information out of the HTTP header
 			#print("Parsing request")
-			type, req, getData, persistent = parseRequest(rawRequest)
+			####type, req, getData, persistent = parseRequest(rawRequest)
+			type, req, getData, postData, persistent = parseByteRequest(byteRequest)
+			type = type.decode()
+			req = req.decode()
+			getData = getData.decode()
 			#print("Request parsed")
 			#Print a log
 			print(str(addr) + ": " + type + " " + str(req))
@@ -89,7 +96,7 @@ def thread(con, addr):
 					elif(req[-3:] == ".py"):
 						try:
 							#resp = subprocess.getoutput("py " + wrapString(root + req) + " " + getData).encode()
-							resp = subprocess.Popen([sys.executable, root + req, getData], stdout=subprocess.PIPE, cwd=(os.path.split(root+req)[0])).communicate()[0] #UGLY, but it works
+							resp = subprocess.Popen([sys.executable, root + req, getData], stdin=subprocess.PIPE, stdout=subprocess.PIPE, cwd=(os.path.split(root+req)[0])).communicate(input=postData)[0] #UGLY, but it works
 						except Exception as e:
 							print(e)
 							resp = "could not run Python script".encode()
