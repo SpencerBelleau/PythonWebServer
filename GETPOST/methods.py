@@ -28,8 +28,11 @@ def parsePost(raw):
 			head, data = part.split(b'\r\n\r\n', 1) #split local headers off
 			head = head.split(b'\r\n') #separate the fields
 			for field in head:
-				field = field.split(b' ')
-				if(field[0] == b"Content-Disposition:"):
+				field = field.split(b': ')
+				vals = field.pop()
+				field += vals.split(b'; ')
+				#print(field)
+				if(field[0] == b"Content-Disposition"):
 					#print("Getting Filename")
 					try:
 						filename = field[3].split(b"=")[1]
@@ -37,7 +40,8 @@ def parsePost(raw):
 					except: #Normally this isn't required at all, since checking the data type will determine if it's form data
 						name = field[2].split(b"=")[1]
 						ret.append(('formData', name, data))
-		except:
+		except Exception as e:
+			#print(e)
 			pass
 	return ret
 ##OUTPUTS LIST OF TUPLES ('type', 'field/filename', data)
