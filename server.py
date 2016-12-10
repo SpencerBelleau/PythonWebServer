@@ -1,14 +1,22 @@
 from socket import socket, AF_INET, SOCK_STREAM
 import os, subprocess, sys, urllib.request, urllib.parse, threading, json
 from funcs.servFunctions import *
+
+#Load the config
 try:
 	config = json.loads(open("config.json", 'r').read())
 except:
 	print("Error loading config")
 	sys.exit(-1)
-listen = socket(AF_INET, SOCK_STREAM)
-listen.bind(('', 80))
-listen.listen(5)
+
+#set up the listener socket
+try:
+	listen = socket(AF_INET, SOCK_STREAM)
+	listen.bind(('localhost', config["port"]))
+	listen.listen(5)
+except:
+	print("Error binding socket, try another port.")
+	sys.exit(-1)
 root = os.path.abspath(os.path.dirname(__file__))
 def thread(con, addr):
 	if(config["persistent"]):

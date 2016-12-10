@@ -1,12 +1,15 @@
 {
 	"executable": "server.py",
+	"port": 8080,
 	"buffersize": 4096,
 	"persistent": true,
 	"timeout": 15,
 	"redirects": {
 		"on": true,
 		"urls": {
-			"/": "html/index.html"
+			"/": "examples/",
+			"/rarePepes/index.py": "examples/index.html",
+			"/Yeb/index.py": "examples/index.html"
 		}
 	},
 	"version": "1.0.0"
