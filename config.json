@@ -7,7 +7,7 @@
 	"redirects": {
 		"on": true,
 		"urls": {
-			"/": "html/index.html",
+			"/": "html/index.html"
 		}
 	},
 	"version": "1.0.0"
