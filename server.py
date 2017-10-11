@@ -12,7 +12,7 @@ except:
 #set up the listener socket
 try:
 	listen = socket(AF_INET, SOCK_STREAM)
-	listen.bind(('localhost', config["port"]))
+	listen.bind(('', config["port"])) #bind to all available interfaces
 	listen.listen(5)
 except:
 	print("Error binding socket, try another port.")
